@@ -2,10 +2,124 @@
   {
     "id": 1,
     "priority": 1,
-    "action": { "type": "block" },
+    "action": {
+      "type": "block"
+    },
     "condition": {
       "urlFilter": "||dev.weixin.qq.com/platform-console/proxy/assets/tel/px.min.js",
-      "resourceTypes": ["script"]
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ],
+      "resourceTypes": [
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||res8.wxqcloud.qq.com.cn/obtelemetry",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ],
+      "resourceTypes": [
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||aegis.qq.com/",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||badjs.weixinbridge.com/",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||cube.weixinbridge.com/cube/report/",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||mp.weixin.qq.com/wxamp/cgi/reportclick",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||mp.weixin.qq.com/wxamp/cgi/report?",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||mp.weixin.qq.com/wxamp/cgi/base/mmdatareport",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||mp.weixin.qq.com/wxamp/cgi/wedata/ReportHomeData",
+      "initiatorDomains": [
+        "mp.weixin.qq.com"
+      ]
     }
   }
 ]

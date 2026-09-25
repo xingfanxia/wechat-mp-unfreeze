@@ -1,6 +1,6 @@
 # WeChat MP unfreeze
 
-微信公众平台 / 小程序管理后台（`mp.weixin.qq.com`）经常一直转圈、左侧菜单出不来，最后弹出 Chrome 的 “Page Unresponsive / 页面无响应”。这个 Chrome 扩展只做一件事：拦掉导致卡死的页面录制脚本。
+微信公众平台 / 小程序管理后台（`mp.weixin.qq.com`）经常一直转圈、左侧菜单出不来，最后弹出 Chrome 的 “Page Unresponsive / 页面无响应”。这个 Chrome 扩展拦掉导致卡死的页面录制脚本，顺带拦掉后台里其他纯上报 / 监控请求，让页面少等一点。
 
 *English: a one-rule Chrome extension that blocks the session-recording script which freezes the WeChat MP admin console. See [English summary](#english).*
 
@@ -74,16 +74,40 @@ Edge（`edge://extensions`）和其他 Chromium 浏览器步骤相同。
 ||dev.weixin.qq.com/platform-console/proxy/assets/tel/px.min.js$script
 ```
 
+## 拦截清单
+
+全部规则在 [`extension/rules.json`](extension/rules.json)，只对 `mp.weixin.qq.com` 页面发出的请求生效（`initiatorDomains`），不影响其他网站。
+
+| 规则 | 是什么 | 为什么拦 |
+|---|---|---|
+| `dev.weixin.qq.com/…/tel/px.min.js` | 页面录制脚本 | 卡死元凶 |
+| `res8.wxqcloud.qq.com.cn/obtelemetry*` | 录制 / 遥测 SDK（`phantom.min.js`、`wxtelsdk.min.js`），`px.min.js` 就是它拉起来的 | 源头一起断 |
+| `aegis.qq.com` | 腾讯前端监控上报 | 纯上报 |
+| `badjs.weixinbridge.com` | 前端错误上报 | 纯上报 |
+| `cube.weixinbridge.com/cube/report/` | 业务埋点上报 | 纯上报 |
+| `mp.weixin.qq.com/wxamp/cgi/reportclick`、`/cgi/report?`、`/cgi/base/mmdatareport`、`/cgi/wedata/ReportHomeData` | 后台自己的点击 / 曝光埋点 | 纯上报，和真实数据接口抢后端 |
+
+拦截后控制台会多出几条 `ERR_BLOCKED_BY_CLIENT` 和 `Uncaught (in promise) Error: Network Error`，是上报失败的噪音，不影响功能。
+
+实测（登录后，新会话第一次加载，各 4 轮平均）：
+
+| | 左侧菜单 + 核心数据出现 |
+|---|---|
+| 只拦 `px.min.js` | 约 6.9 s |
+| 全部规则 | 约 5.3 s |
+
+首页、版本管理、成员管理、账号设置都正常显示数据。剩下的慢主要是腾讯后端本身：从海外访问，首页 HTML 首字节约 2.7 s，每个数据接口 1–4 s，这部分扩展帮不上。
+
 ## 它做了什么，没做什么
 
-- 只有一条 [`declarativeNetRequest`](extension/rules.json) 拦截规则，只拦这一个脚本 URL。
-- 不读取页面内容、不注入脚本、不申请任何站点权限，没有网络请求。
-- 被拦的是监控 / 录制上报，不影响后台功能。
-- 腾讯如果改了脚本地址或修了这个问题，这条规则会自然失效或变得不需要。欢迎提 issue / PR 更新规则。
+- 只有静态的 `declarativeNetRequest` 拦截规则。
+- 不读取页面内容、不注入脚本、不申请任何站点权限，自己不发任何网络请求，也没有弹窗——点工具栏上的图标没反应是正常的。
+- 被拦的都是监控 / 上报，不影响后台功能。
+- 腾讯改了地址或修了问题，规则会自然失效或变得不需要。欢迎提 issue / PR。
 
 ## English
 
-The WeChat MP admin console (`mp.weixin.qq.com`) freezes on load because its session-recording script `dev.weixin.qq.com/platform-console/proxy/assets/tel/px.min.js` walks `previousSibling` chains for every node while building its DOM mirror (`getNodePos`), which is quadratic and runs synchronously. It hits the first page load of every fresh browser session, so incognito windows almost always hang. This extension blocks that one script with a single `declarativeNetRequest` rule; no page access, no host permissions. Load `extension/` via `chrome://extensions` → Developer mode → Load unpacked.
+The WeChat MP admin console (`mp.weixin.qq.com`) freezes on load because its session-recording script `dev.weixin.qq.com/platform-console/proxy/assets/tel/px.min.js` walks `previousSibling` chains for every node while building its DOM mirror (`getNodePos`), which is quadratic and runs synchronously. It hits the first page load of every fresh browser session, so incognito windows almost always hang. This extension blocks that script plus the console's other telemetry/beacon requests (aegis, badjs, cube reports, first-party click/impression beacons) with static `declarativeNetRequest` rules scoped to `mp.weixin.qq.com`; no page access, no host permissions. Load `extension/` via `chrome://extensions` → Developer mode → Load unpacked.
 
 ## License
 
