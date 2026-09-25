@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "WeChat MP unfreeze",
+  "description": "Blocks the page-recording script that freezes the WeChat Official Accounts / Mini Program admin (mp.weixin.qq.com).",
+  "version": "1.0.0",
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "homepage_url": "https://github.com/xingfanxia/wechat-mp-unfreeze"
+}
